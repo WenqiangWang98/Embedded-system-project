@@ -69,8 +69,20 @@ class TCS34725 {
             int blue_value = ((int)blue_data[1] << 8) | blue_data[0];
             return blue_value;
         };
+        int readFixedValueRed(){
+            return  readValueRed()*255/ readValueClear();
+        };
+        int readFixedValueGreen(){
+            return  readValueGreen()*255/ readValueClear();
+        };
+        int readFixedValueBlue(){
+            return  readValueBlue()*255/ readValueClear();
+        };
         void printValues(){
             pc->printf("Clear (%d), Red (%d), Green (%d), Blue (%d)\n", readValueClear(), readValueRed(), readValueGreen(), readValueBlue());
+        }
+        void printFixedValue(){
+            pc->printf("Red (%d), Green (%d), Blue (%d)\n", readFixedValueRed(), readFixedValueGreen(), readFixedValueBlue());
         }
         
         
@@ -144,7 +156,7 @@ int main() {
         
         //pc.printf("Clear (%d), Red (%d), Green (%d), Blue (%d)\n", colorSensor.readValueClear(), colorSensor.readValueRed(), colorSensor.readValueGreen(), colorSensor.readValueBlue());
         //The above code displays the red, green, and blue values read in by the color sensor.
-        colorSensor.printValues();
+        colorSensor.printFixedValue();
         ThisThread::sleep_for(1000);
     }
     
