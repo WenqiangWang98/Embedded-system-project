@@ -5,18 +5,33 @@ Serial pc(USBTX, USBRX);    //Used to view the colors that are read in
  
 int sensor_addr = 41 << 1;
  
-DigitalOut green(LED1);
+//DigitalOut green(LED1);
 DigitalOut led(PB_7);
 
 class TCS34725 {
     private:
     I2C* i2c;
     Serial* pc;
+    DigitalOut* led;
     public:
         TCS34725();
-        TCS34725(I2C* _i2c,Serial* _pc){
+        TCS34725(I2C* _i2c,Serial* _pc,DigitalOut* _led){
             i2c=_i2c;
             pc=_pc;
+            led=_led;
+        };
+        void init(){
+            pc->baud(115200);
+            i2c->frequency(400000);
+            char timing_register[2] = {129,0};
+            i2c->write(sensor_addr,timing_register,2,false);
+    
+            char control_register[2] = {143,0};
+            i2c->write(sensor_addr,control_register,2,false);
+    
+            char enable_register[2] = {128,3};
+            i2c->write(sensor_addr,enable_register,2,false);
+            *led = 1;
         };
         int readValueClear(){
             char clear_reg[1] = {148};
@@ -54,43 +69,48 @@ class TCS34725 {
             int blue_value = ((int)blue_data[1] << 8) | blue_data[0];
             return blue_value;
         };
+        void printValues(){
+            pc->printf("Clear (%d), Red (%d), Green (%d), Blue (%d)\n", readValueClear(), readValueRed(), readValueGreen(), readValueBlue());
+        }
+        
         
 };
 
 int main() {
-    pc.baud(115200);
-    green = 1; // off
-    TCS34725 colorSensor(&i2c,&pc);
+    //pc.baud(115200);
+    //green = 1; // off
+    TCS34725 colorSensor(&i2c,&pc,&led);
     // Connect to the Color sensor and verify
+    colorSensor.init();
     
-    i2c.frequency(400000);
+    //i2c.frequency(400000);
     
-    char id_regval[1] = {146};
-    char data[1] = {0};
-    i2c.write(sensor_addr,id_regval,1, true);
-    i2c.read(sensor_addr,data,1,false);
+    // char id_regval[1] = {146};
+    // char data[1] = {0};
+    // i2c.write(sensor_addr,id_regval,1, true);
+    // i2c.read(sensor_addr,data,1,false);
     
-    if (data[0]==68) {
-        green = 0;
-        wait (2); 
-        green = 1;
-        } else {
-        green = 1; 
-    }
+    // if (data[0]==68) {
+    //     green = 0;
+    //     wait (2); 
+    //     green = 1;
+    //     } else {
+    //     green = 1; 
+    // }
     
     // Initialize color sensor
     
-    char timing_register[2] = {129,0};
-    i2c.write(sensor_addr,timing_register,2,false);
+    // char timing_register[2] = {129,0};
+    // i2c.write(sensor_addr,timing_register,2,false);
     
-    char control_register[2] = {143,0};
-    i2c.write(sensor_addr,control_register,2,false);
+    // char control_register[2] = {143,0};
+    // i2c.write(sensor_addr,control_register,2,false);
     
-    char enable_register[2] = {128,3};
-    i2c.write(sensor_addr,enable_register,2,false);
+    // char enable_register[2] = {128,3};
+    // i2c.write(sensor_addr,enable_register,2,false);
     
     // Read data from color sensor (Clear/Red/Green/Blue)
-    led = 1;
+    //led = 1;
     while (true) { 
         // char clear_reg[1] = {148};
         // char clear_data[2] = {0,0};
@@ -122,9 +142,10 @@ int main() {
         
         // print sensor readings
         
-        pc.printf("Clear (%d), Red (%d), Green (%d), Blue (%d)\n", colorSensor.readValueClear(), colorSensor.readValueRed(), colorSensor.readValueGreen(), colorSensor.readValueBlue());
+        //pc.printf("Clear (%d), Red (%d), Green (%d), Blue (%d)\n", colorSensor.readValueClear(), colorSensor.readValueRed(), colorSensor.readValueGreen(), colorSensor.readValueBlue());
         //The above code displays the red, green, and blue values read in by the color sensor.
-        wait(0.5);
+        colorSensor.printValues();
+        ThisThread::sleep_for(1000);
     }
     
 }
