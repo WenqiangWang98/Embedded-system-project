@@ -86,8 +86,7 @@ class TCS34725 {
                 pc->printf("Error, gain value out of range.");
                 return;
             };
-            char again_register[2]={0x0f,0x80|3};
-            again_register[1]=gain|0x80;
+            char again_register[2]={0x0f|0x80,static_cast<char>(gain)};
             i2c->write(sensor_addr,again_register,2,false);
         };
         
