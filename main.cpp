@@ -1,14 +1,20 @@
-#include "TCS34725.cpp"
-I2C i2c(PB_9, PB_8); //pins for I2C communication (SDA, SCL)
-Serial pc(USBTX, USBRX);  
-DigitalOut led(PB_7);
-int main() {
-    TCS34725 colorSensor(&i2c,&pc,&led);
-    colorSensor.init();
-    colorSensor.setGain(3);
-    while (true) { 
-        colorSensor.printFixedValues();
-        ThisThread::sleep_for(1000);
-    }
-    
+#include "mbed.h"
+#include "MMA8451Q.h"
+#include "TCS34725.h"
+ 
+ #define MMA8451_I2C_ADDRESS (0x1c<<1)
+Serial pc(USBTX, USBRX);
+I2C i2c(PB_9,PB_8);
+int main(void) {
+    i2c.frequency(400000);
+    MMA8451Q acc(&i2c);
+    TCS34725 color(&i2c);
+    pc.baud(115200);
+
+     while (true) {     
+
+         pc.printf("acc:\nx: %f, y: %f, z: %f\n",acc.getAccX(),acc.getAccY(),acc.getAccZ());
+         pc.printf("color:\nred: %f, green: %f, blue: %f\n",color.getFixedRed(),color.getFixedGreen(),color.getFixedBlue());
+         wait(1);
+      }
 }
