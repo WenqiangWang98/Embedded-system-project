@@ -6,7 +6,7 @@
 #define REG_CLEAR_DATA      0x94
 #define REG_RED_DATA        0x96
 #define REG_GREEN_DATA      0x98
-#define REG_BLUE_DATA       0x9B
+#define REG_BLUE_DATA       0x9A
 
 TCS34725::TCS34725(I2C* _i2c):i2c(_i2c){
     //enable
@@ -36,10 +36,10 @@ float TCS34725::getFixedRed(){
     return (float(getValueColor(REG_RED_DATA))*255/getValueClear());
 }
 float TCS34725::getFixedGreen(){
-    return (float(getValueColor(REG_RED_DATA))*255/getValueClear());
+    return (float(getValueColor(REG_GREEN_DATA))*255/getValueClear());
 }
 float TCS34725::getFixedBlue(){
-    return (float(getValueColor(REG_RED_DATA))*255/getValueClear());
+    return (float(getValueColor(REG_BLUE_DATA))*255/getValueClear());
 }
 void TCS34725::getFixedColors(float * res) {
     res[0] = getValueClear();
@@ -48,8 +48,8 @@ void TCS34725::getFixedColors(float * res) {
     res[3] = getFixedBlue();
 }
 void TCS34725::setGain(int gain){
-    char again_register[2]={0x0f|0x80,static_cast<char>(gain)};
-    i2c->write(sensor_addr,again_register,2,false);
+    uint8_t control_register[2] = {REG_CTRL,static_cast<uint8_t>(gain)};
+    writeRegs(control_register, 2);
 }
 
 int16_t TCS34725::getValueColor(uint8_t addr){

@@ -10,11 +10,12 @@ int main(void) {
     MMA8451Q acc(&i2c);
     TCS34725 color(&i2c);
     pc.baud(115200);
+    color.setGain(1);
+    while (true) {     
 
-     while (true) {     
-
-         pc.printf("acc:\nx: %f, y: %f, z: %f\n",acc.getAccX(),acc.getAccY(),acc.getAccZ());
-         pc.printf("color:\nred: %f, green: %f, blue: %f\n",color.getFixedRed(),color.getFixedGreen(),color.getFixedBlue());
-         wait(1);
-      }
+        //pc.printf("acc:\nx: %f, y: %f, z: %f\n",acc.getAccX(),acc.getAccY(),acc.getAccZ());
+        pc.printf("color:\nred: %f, green: %f, blue: %f\n",color.getFixedRed(),color.getFixedGreen(),color.getFixedBlue());
+        pc.printf("clear: %f, red: %f, green: %f, blue: %f\n",color.getValueClear(),color.getValueRed(),color.getValueGreen(),color.getValueBlue());
+        wait(2);
+    }
 }
