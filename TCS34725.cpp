@@ -4,6 +4,7 @@
 #define REG_CTRL            0x8F
 #define REG_ENABLE          0x80
 #define REG_CLEAR_DATA      0x94
+#define REG_TIMING          0x81    
 #define REG_RED_DATA        0x96
 #define REG_GREEN_DATA      0x98
 #define REG_BLUE_DATA       0x9A
@@ -14,41 +15,45 @@ TCS34725::TCS34725(I2C* _i2c):i2c(_i2c){
     writeRegs(enable_register, 2);
 }
 TCS34725::~TCS34725(){};
-float TCS34725::getValueClear(){
-    return float(getValueColor(REG_CLEAR_DATA));
+int16_t TCS34725::getValueClear(){
+    return (getValueColor(REG_CLEAR_DATA));
 }
-float TCS34725::getValueRed(){
-    return float(getValueColor(REG_RED_DATA));
+int16_t TCS34725::getValueRed(){
+    return (getValueColor(REG_RED_DATA));
 }
-float TCS34725::getValueGreen(){
-    return float(getValueColor(REG_GREEN_DATA));
+int16_t TCS34725::getValueGreen(){
+    return (getValueColor(REG_GREEN_DATA));
 }
-float TCS34725::getValueBlue(){
-    return float(getValueColor(REG_BLUE_DATA));
+int16_t TCS34725::getValueBlue(){
+    return (getValueColor(REG_BLUE_DATA));
 }
-void TCS34725::getAllColors(float * res) {
+void TCS34725::getAllColors(int16_t * res) {
     res[0] = getValueClear();
     res[1] = getValueRed();
     res[2] = getValueGreen();
     res[3] = getValueBlue();
 }
-float TCS34725::getFixedRed(){
-    return (float(getValueColor(REG_RED_DATA))*255/getValueClear());
+int16_t TCS34725::getFixedRed(){
+    return ((getValueColor(REG_RED_DATA))*255/getValueClear());
 }
-float TCS34725::getFixedGreen(){
-    return (float(getValueColor(REG_GREEN_DATA))*255/getValueClear());
+int16_t TCS34725::getFixedGreen(){
+    return ((getValueColor(REG_GREEN_DATA))*255/getValueClear());
 }
-float TCS34725::getFixedBlue(){
-    return (float(getValueColor(REG_BLUE_DATA))*255/getValueClear());
+int16_t TCS34725::getFixedBlue(){
+    return ((getValueColor(REG_BLUE_DATA))*255/getValueClear());
 }
-void TCS34725::getFixedColors(float * res) {
+void TCS34725::getFixedColors(int16_t * res) {
     res[0] = getValueClear();
     res[1] = getFixedRed();
     res[2] = getFixedGreen();
     res[3] = getFixedBlue();
 }
-void TCS34725::setGain(int gain){
+void TCS34725::setGain(int16_t gain){
     uint8_t control_register[2] = {REG_CTRL,static_cast<uint8_t>(gain)};
+    writeRegs(control_register, 2);
+}
+void TCS34725::setTiming(int16_t timing){
+    uint8_t control_register[2] = {REG_TIMING,static_cast<uint8_t>(timing)};
     writeRegs(control_register, 2);
 }
 
