@@ -8,16 +8,17 @@
 public:
   TCS34725(I2C* _i2c);
   ~TCS34725();
-  float getValueClear();
-  float getValueRed();
-  float getValueGreen();
-  float getValueBlue();
-  void getAllColors(float * res);
-  float getFixedRed();
-  float getFixedGreen();
-  float getFixedBlue();
-  void getFixedColors(float * res);
-  void setGain(int gain);
+  int16_t getValueClear();
+  int16_t getValueRed();
+  int16_t getValueGreen();
+  int16_t getValueBlue();
+  void getAllColors(int16_t * res);
+  int16_t getFixedRed();
+  int16_t getFixedGreen();
+  int16_t getFixedBlue();
+  void getFixedColors(int16_t * res);
+  void setGain(int16_t gain);
+  void setTiming(int16_t timing);
  
 private:
   I2C* i2c;
