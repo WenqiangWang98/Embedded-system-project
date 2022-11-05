@@ -12,11 +12,11 @@ public:
   int16_t getValueRed();
   int16_t getValueGreen();
   int16_t getValueBlue();
-  void getAllColors(int16_t * res);
+  int16_t * getAllColors();
   int16_t getFixedRed();
   int16_t getFixedGreen();
   int16_t getFixedBlue();
-  void getFixedColors(int16_t * res);
+  int16_t * getFixedColors();
   void setGain(int16_t gain);
   void setTiming(int16_t timing);
  

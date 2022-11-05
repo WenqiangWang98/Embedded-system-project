@@ -1,4 +1,5 @@
 #include "TCS34725.h"
+#include <cstdint>
  
 #define REG_TIMING          0x81
 #define REG_CTRL            0x8F
@@ -27,11 +28,13 @@ int16_t TCS34725::getValueGreen(){
 int16_t TCS34725::getValueBlue(){
     return (getValueColor(REG_BLUE_DATA));
 }
-void TCS34725::getAllColors(int16_t * res) {
+int16_t * TCS34725::getAllColors() {
+    int16_t * res;
     res[0] = getValueClear();
     res[1] = getValueRed();
     res[2] = getValueGreen();
     res[3] = getValueBlue();
+    return res;
 }
 int16_t TCS34725::getFixedRed(){
     return ((getValueColor(REG_RED_DATA))*255/getValueClear());
@@ -42,11 +45,13 @@ int16_t TCS34725::getFixedGreen(){
 int16_t TCS34725::getFixedBlue(){
     return ((getValueColor(REG_BLUE_DATA))*255/getValueClear());
 }
-void TCS34725::getFixedColors(int16_t * res) {
+int16_t * TCS34725::getFixedColors() {
+    int16_t * res ;
     res[0] = getValueClear();
     res[1] = getFixedRed();
     res[2] = getFixedGreen();
     res[3] = getFixedBlue();
+    return res;
 }
 void TCS34725::setGain(int16_t gain){
     uint8_t control_register[2] = {REG_CTRL,static_cast<uint8_t>(gain)};
@@ -73,4 +78,3 @@ void TCS34725::readRegs(int addr, uint8_t * data, int len) {
 void TCS34725::writeRegs(uint8_t * data, int len) {
     i2c->write(sensor_addr, (char *)data, len);
 }
- 
