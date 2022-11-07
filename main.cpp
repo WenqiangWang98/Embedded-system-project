@@ -9,7 +9,9 @@
 #include <cstdint>
 #include <cstdio>
 #include <string>
-
+#define size 10 //should be 120 = 3600 / 30 segs
+#define cadencetest 2000 //every 2 segs test mode
+#define cadencenormal 3000 //every 30 segs normal mode
 
 //For Color Senor TCS34725
 I2C i2c(PB_9, PB_8); //pins for I2C communication (SDA, SCL)
@@ -33,7 +35,8 @@ Serial pcGPS(PA_9,PA_10);
 // blue button
 InterruptIn button(USER_BUTTON);
 
-
+InterruptIn INT1(PA_11);
+InterruptIn INT2(PA_12);
 // general
 
 int mode = 0;
@@ -46,19 +49,18 @@ DigitalOut led3(LED3);
 
 
 // parameter aux to calculate
-float *soilValues;
-float *lightValues;
-float *tempValues;
-float *humValues;
 
-int *colorValues;
 
-float * xValues;
+float * soilValues; // mean max min
+float * lightValues;
+float * tempValues;
+float * humValues;
+
+int * colorValues; // red blue green
+
+float * xValues; // max min
 float * yValues;
 float * zValues;
-
-Timeout to;
-
 
 
 
@@ -163,8 +165,11 @@ void printAllMeasuredTestMode(){
 
 void printAllMeasuredNormalMode(){
 
-    ledColor = 7;
+    if(index == 0){
+         ledColor = 7;
 
+    }
+   
     float soilValue= soilSensor.readValue();
     soilValues[index]=soilValue; // save value
     if(soilValue<= 100 & soilValue >= 0){ // Soil moisture in %, corresponding 0% to total dryness and 100% to maximum moisture.
@@ -195,12 +200,12 @@ void printAllMeasuredNormalMode(){
         min = time.substr(2,2);
         sec = time.substr(5,2);
     
-        printf("GPS: Sats: %d, Lat(UTC): %2.3f, Long(UTC): %2.3f, Altitude: %.1fm, GPS_Time %s:%s:%s  \n",
+        printf("GPS: Sats: %d, Lat(UTC): %2.3f, Long(UTC): %2.3f, Altitude: %.1fm, GPS_Time %s:%s:%s %f \n",
         sensorGPS.sats, 
         sensorGPS.latitude,  
         sensorGPS.longitude,     
         sensorGPS.alt,
-        hour.c_str(),min.c_str(),sec.c_str()
+        hour.c_str(),min.c_str(),sec.c_str(), sensorGPS.time
         );
 
     }
@@ -291,10 +296,11 @@ void printAllMeasuredNormalMode(){
 
 
 void printMeanMaxMin(float * values,string name,int length){
-    float mean=0;
-    float min=0;
-    float max=0;
-    for(int i=1; i< length;i++){
+    float mean=values[0];
+    float min=values[0];
+    float max=values[0];
+    for(int i=0; i< length;i++){
+        //printf("%f\n",values[i]);
         mean+=values[i];
         if(values[i]>max){
             max = values[i];
@@ -313,8 +319,8 @@ void printColorDom(int * values,int length){
     int colorRed=0; //0
     int colorGreen=0; //2
     int colorBlue=0; //1
-    for(int i=1; i< length;i++){
-        
+    for(int i=0; i< length;i++){
+        //printf("%d\n",values[i]);
         if(values[i]==0){
             colorRed++;
         }
@@ -325,7 +331,7 @@ void printColorDom(int * values,int length){
             colorBlue++;
         }
     }
-    printf("%d %d %d\n",colorRed,colorBlue,colorGreen);
+    // printf("%d %d %d\n",colorRed,colorBlue,colorGreen);
     string colorDomStr;
     if(colorRed>colorGreen){
         if(colorRed>colorBlue){
@@ -358,27 +364,18 @@ void printColorDom(int * values,int length){
 void printAllCalculated(){
     printf("\n\n\nCalculated Value of %d Values: \n\n",index);
 
-    printMeanMaxMin(tempValues, "temperature",index+1);
-    printMeanMaxMin(humValues, "relative humidity",index+1);
-    printMeanMaxMin(lightValues, "ambient light",index+1);
-    printMeanMaxMin(soilValues, "soil moisture",index+1);
-    ThisThread::sleep_for(2000);
-    // for (int i=1; i<index+1; i++) {
-    //     printf("test %f \n",xValues[i]);
-    // }
-    //  for (int i=1; i<index+1; i++) {
-    //     printf("test %f \n",yValues[i]);
-    // }
-    //  for (int i=1; i<index+1; i++) {
-    //     printf("test %f \n",zValues[i]);
-    // }
+    printMeanMaxMin(tempValues, "temperature",index);
+    printMeanMaxMin(humValues, "relative humidity",index);
+    printMeanMaxMin(lightValues, "ambient light",index);
+    printMeanMaxMin(soilValues, "soil moisture",index);
 
 
-    printMeanMaxMin(xValues, "X axes",index+1);
-    printMeanMaxMin(yValues, "Y axes",index+1);
-    printMeanMaxMin(zValues, "Z axes",index+1);
-    ThisThread::sleep_for(1000);
-    printColorDom(colorValues,index+1);
+
+    printMeanMaxMin(xValues, "X axes",index);
+    printMeanMaxMin(yValues, "Y axes",index);
+    printMeanMaxMin(zValues, "Z axes",index);
+  
+    printColorDom(colorValues,index);
 
     
 
@@ -396,24 +393,25 @@ void printAllCalculated(){
 void resetValues(){
      // reset values
     index=0;
-    delete soilValues;
-    delete lightValues;
-    delete tempValues;
-    delete humValues;
-    delete colorValues;
-    delete xValues;
-    delete yValues;
-    delete zValues;
-    soilValues = new float;
-    lightValues= new float;
-    tempValues= new float;
-    humValues= new float;
+    delete []soilValues;
+    delete []lightValues;
+    delete []tempValues;
+    delete []humValues;
+    delete []colorValues;
+    delete []xValues;
+    delete []yValues;
+    delete []zValues;
+    soilValues = new float[size];
+    lightValues= new float[size];
+    tempValues= new float[size];
+    humValues= new float[size];
 
-    xValues= new float;
-    yValues= new float;
-    zValues= new float;
+    xValues= new float[size];
+    yValues= new float[size];
+    zValues= new float[size];
 
-    colorValues = new int ;
+    colorValues = new int [size];
+    
 
 }
 
@@ -423,52 +421,54 @@ void resetValues(){
 
 
 void testMode(){
-    // ledColor = 1;
-    // printf("color : %d \n",ledColor);
-    // printf("test mode : %d \n",mode);
+
     pc.printf("TEST MODE\n");
+    led1=1;
+    index = 0 ; //reset index normal mode
     printAllMeasuredTestMode();
     led.writeAndChangeColor(ledColor);// change led color using the dominant colour detected by the sensor
-    ThisThread::sleep_for(2000); // every 2 seconds
+    ThisThread::sleep_for(cadencetest); // every 2 seconds
 
 
 }
 
 void normalMode(){
-    // ledColor = 5;
-    // printf("color : %d \n",ledColor);
-    // printf("normal mode : %d \n",mode);
-    
-    
-    if(index == 5){ // 1 hours / 30 seconds = 120 index
+  
+    if(index == size){ // 1 hours / 30 seconds = 120 index
         printAllCalculated();
-        ThisThread::sleep_for(2000);
         resetValues();
+        ThisThread::sleep_for(2000);
+        
     }
     pc.printf("NORMAL MODE\n");
     printAllMeasuredNormalMode();
     
     led.writeAndChangeColor(ledColor);// change led color using the dominant colour detected by the sensor
-    ThisThread::sleep_for(3000); // every 30 seconds
+    led2=1;
+    ThisThread::sleep_for(cadencenormal); // every 30 seconds
 }
 
 void advancedMode(){
-    // ledColor = 6;
-    // printf("color : %d \n",ledColor);
-    // printf("advanced mode : %d \n",mode);
+
     pc.printf("ADVANCED MODE\n");
+    led3= 1;
+    index = 0 ; //reset index normal mode
+
 }
 
 void button_pressed(void){
     pressed = true;
 }
-
+void rise_INT1(){
+pc.printf(const char *format, ...)
+}
 
 
 int main() {
  
     //initialize
-    
+    INT1.mode(PullDown);
+    INT1.rise(rise_INT1);
     
     mode =0;
     resetValues();
@@ -504,18 +504,18 @@ int main() {
         switch (mode) {
             case 0:
                 testMode();
-                led1=1;
-                index = 0 ; //reset index normal mode
+                
+               
                 break;
             case 1:
 
                 normalMode();
-                led2=1;
+           
                 break;
             case 2:
                 advancedMode();
-                index = 0 ; //reset index normal mode
-                led3= 1;
+               
+
                 break;
         }
    

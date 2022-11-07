@@ -21,7 +21,6 @@ private:
   void readRegs(int addr, uint8_t * data, int len);
   void writeRegs(uint8_t * data, int len);
   int16_t getAccAxis(uint8_t addr);
- 
 };
  
 #endif
