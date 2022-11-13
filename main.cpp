@@ -47,7 +47,7 @@ DigitalOut led1(LED1);
 DigitalOut led2(LED2);
 DigitalOut led3(LED3);
 
-
+int tap_times=0;
 // parameter aux to calculate
 
 
@@ -421,7 +421,7 @@ void resetValues(){
 
 
 void testMode(){
-
+    
     pc.printf("TEST MODE\n");
     led1=1;
     index = 0 ; //reset index normal mode
@@ -454,13 +454,16 @@ void advancedMode(){
     led3= 1;
     index = 0 ; //reset index normal mode
 
+    pc.printf("Tap times: %d \n",tap_times);
+
 }
 
 void button_pressed(void){
     pressed = true;
 }
+
 void rise_INT1(){
-pc.printf(const char *format, ...)
+    tap_times++;
 }
 
 

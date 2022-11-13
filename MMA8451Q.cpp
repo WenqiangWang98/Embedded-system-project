@@ -16,21 +16,39 @@
  
 MMA8451Q::MMA8451Q(I2C* _i2c ): i2c(_i2c) {
     // activate the peripheral
-    uint8_t data[2] = {REG_CTRL_REG_1, 0x01};
+    uint8_t data[2] = {0x2A, 0x08};
     writeRegs(data, 2);
     
-    uint8_t data2[2] = {REG_CTRL_REG_4, 12};//activate freefall and motion and puls interrupt
+    
+    uint8_t data3[2] = {0x21, 0x15};//activate flag single tap and ELE
+    writeRegs(data3, 2);
+    
+    uint8_t data6[2] = {0x23, 0x19};//Set X Threshold to 1.575g
+    writeRegs(data6, 2);
+    uint8_t data7[2] = {0x24, 0x19};//Set X Threshold to 1.575g
+    writeRegs(data7, 2);
+    uint8_t data8[2] = {0x25, 0x2A};//Set X Threshold to 1.575g
+    writeRegs(data8, 2);
+
+    uint8_t data9[2] = {0x26, 0x50};//Set X Threshold to 1.575g
+    writeRegs(data9, 2);
+
+    uint8_t data10[2] = {0x27, 0xF0};//Set X Threshold to 1.575g
+    writeRegs(data10, 2);
+
+    uint8_t data2[2] = {0x2D, 0x08};//activate freefall and motion and puls interrupt
     writeRegs(data2, 2);
 
-    uint8_t data1[2] = {REG_CTRL_REG_5, 0x08};//activate interrupt for freefall and motion INT2 and for pulse INT1
+    uint8_t data1[2] = {0x2E, 0x08};//activate interrupt for freefall and motion INT2 and for pulse INT1
     writeRegs(data1, 2);
-    
-    uint8_t data3[2] = {PULSE_CFG, 0x50};//activate flag single tap and ELE
-    writeRegs(data3, 2);
-    uint8_t data4[2] = {PULSE_LTCY, 0xFF};//latency time,0.318s
-    writeRegs(data4, 2);
-    uint8_t data5[2] = {PULSE_THSZ, 0x0A};//threshold of axis z 
-    writeRegs(data5, 2);
+
+    uint8_t data11[2]={0x2A,9};
+    writeRegs(data11, 2);
+    // char t[1] = {0X2A};
+    // i2c->write(m_addr, t, 1, true);
+    // i2c->read(m_addr, (char *)data11, 1);
+    // data11[0]=data11[0]| 0x01;
+    // i2c->write(m_addr, (char *)data11, 1);
 
 }
  
