@@ -38,7 +38,6 @@ InterruptIn button(USER_BUTTON);
 InterruptIn INT1(PA_11);
 InterruptIn INT2(PA_12);
 // general
-InterruptIn reset(MCU_nS);
 
 bool stopFlag=false;
 Thread thread;
@@ -93,7 +92,7 @@ void printAllMeasuredTestMode(){
     string hour, min,sec;
     hour = time.substr(0,2);
     min = time.substr(2,2);
-    sec = time.substr(5,2);
+    sec = time.substr(4,2);
  
     printf("GPS: Sats: %d, Lat(UTC): %2.3f, Long(UTC): %2.3f, Altitude: %.1fm, GPS_Time %s:%s:%s  \n",
     sensorGPS.sats, 
@@ -205,7 +204,7 @@ void printAllMeasuredNormalMode(){
         string hour, min,sec;
         hour = time.substr(0,2);
         min = time.substr(2,2);
-        sec = time.substr(5,2);
+        sec = time.substr(4,2);
     
         printf("GPS: Sats: %d, Lat(UTC): %2.3f, Long(UTC): %2.3f, Altitude: %.1fm, GPS_Time %s:%s:%s %f \n",
         sensorGPS.sats, 
@@ -485,8 +484,8 @@ void button_pressed(void){
 }
 
 void rise_INT1(){
-    //if(mode<2)tap_times++;
-    if(mode<2)stopFlag=true;
+    if(mode<2)tap_times++;
+    //if(mode<2)stopFlag=true;
 }
 
 void rise_INT2(){
@@ -496,11 +495,10 @@ void rise_INT2(){
 void loop_thread(){
     while(true){
         if(stopFlag){
-
+            led3=!led3;
+            ThisThread::sleep_for(1000);
         }
-        if(reset){
-            
-        }
+     
         while (!stopFlag) {
         
             if(pressed){
