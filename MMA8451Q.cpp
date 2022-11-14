@@ -15,20 +15,22 @@
 #define UINT14_MAX        16383
  
 MMA8451Q::MMA8451Q(I2C* _i2c ): i2c(_i2c) {
+    mode=true;
+    changeMode(false);
     // activate the peripheral
-    // uint8_t data[2] = {0x2A, 0x18};
+    // uint8_t data[2] = {0x2A, 0x08};
     // writeRegs(data, 2);
     
     
-    // // uint8_t data3[2] = {0x21, 0x15};//activate flag single tap and ELE
-    // // writeRegs(data3, 2);
+    // uint8_t data3[2] = {0x21, 0x15};//activate flag single tap and ELE
+    // writeRegs(data3, 2);
     
-    uint8_t data6[2] = {0x23, 0x19};//Set X Threshold to 1.575g
-    writeRegs(data6, 2);
-    uint8_t data7[2] = {0x24, 0x19};//Set X Threshold to 1.575g
-    writeRegs(data7, 2);
-    uint8_t data8[2] = {0x25, 0x2A};//Set X Threshold to 1.575g
-    writeRegs(data8, 2);
+    // uint8_t data6[2] = {0x23, 0x19};//Set X Threshold to 1.575g
+    // writeRegs(data6, 2);
+    // uint8_t data7[2] = {0x24, 0x19};//Set X Threshold to 1.575g
+    // writeRegs(data7, 2);
+    // uint8_t data8[2] = {0x25, 0x2A};//Set X Threshold to 1.575g
+    // writeRegs(data8, 2);
 
     // // uint8_t data9[2] = {0x26, 0x50};//Set X Threshold to 1.575g
     // // writeRegs(data9, 2);
@@ -55,22 +57,22 @@ MMA8451Q::MMA8451Q(I2C* _i2c ): i2c(_i2c) {
     // writeRegs(data11, 2);
 
 
-    uint8_t data12[2] = {0x2A, 0x20};//activate flag OEA =1
-    writeRegs(data12, 2);
-    uint8_t data13[2] = {0x15, 0xB8};// 3g/0.063g = 48
-    writeRegs(data13, 2);
-    uint8_t data14[2] = {0x17, 0x03};// 400 ms/10 ms 25count
-    writeRegs(data14, 2);
-    uint8_t data22[2] = {0x18, 0x06};//activate freefall and motion and puls interrupt
-    writeRegs(data22, 2);
-    uint8_t data2[2] = {0x2D, 0x04};//activate freefall and motion and puls interrupt
-    writeRegs(data2, 2);
+    // uint8_t data12[2] = {0x2A, 0x20};//activate flag OEA =1
+    // writeRegs(data12, 2);
+    // uint8_t data13[2] = {0x15, 0xB8};// 3g/0.063g = 48
+    // writeRegs(data13, 2);
+    // uint8_t data14[2] = {0x17, 0x03};// 400 ms/10 ms 25count
+    // writeRegs(data14, 2);
+    // uint8_t data22[2] = {0x18, 0x06};//activate freefall and motion and puls interrupt
+    // writeRegs(data22, 2);
+    // uint8_t data2[2] = {0x2D, 0x04};//activate freefall and motion and puls interrupt
+    // writeRegs(data2, 2);
 
-    uint8_t data1[2] = {0x2E, 0x04};//activate interrupt for freefall and motion INT2 and for pulse INT1
-    writeRegs(data1, 2);
+    // uint8_t data1[2] = {0x2E, 0x04};//activate interrupt for freefall and motion INT2 and for pulse INT1
+    // writeRegs(data1, 2);
 
-    uint8_t data122[2] = {0x2A, 0x21};//activate flag OEA =1
-    writeRegs(data122, 2);
+    // uint8_t data122[2] = {0x2A, 0x21};//activate flag OEA =1
+    // writeRegs(data122, 2);
 
 
 
@@ -136,17 +138,71 @@ void MMA8451Q::writeRegs(uint8_t * data, int len) {
     i2c->write(m_addr, (char *)data, len);
 }
  
-void MMA8451Q::changeMode(bool mode){
+void MMA8451Q::changeMode(bool _mode){
 
+    if(_mode==mode)return;
+    else if(_mode==false&&mode==true){
+        mode=false;
+        uint8_t data[2] = {0x2A, 0x08};
+        writeRegs(data, 2);
+        uint8_t data3[2] = {0x21, 0x15};//activate flag single tap and ELE
+        writeRegs(data3, 2);
+        uint8_t data6[2] = {0x23, 0x19};//Set X Threshold to 1.575g
+        writeRegs(data6, 2);
+        uint8_t data7[2] = {0x24, 0x19};//Set X Threshold to 1.575g
+        writeRegs(data7, 2);
+        uint8_t data8[2] = {0x25, 0x2A};//Set X Threshold to 1.575g
+        writeRegs(data8, 2);
+        uint8_t data9[2] = {0x26, 0x50};//Set X Threshold to 1.575g
+        writeRegs(data9, 2);
+        uint8_t data10[2] = {0x27, 0xF0};//Set X Threshold to 1.575g
+        writeRegs(data10, 2);
+
+        uint8_t data12[2] = {0x15, 0xD8};//activate flag OEA =1
+        writeRegs(data12, 2);
+        uint8_t data13[2] = {0x17, 0x20};// 3g/0.063g = 48
+        writeRegs(data13, 2);
+        uint8_t data14[2] = {0x18, 0x19};// 400 ms/10 ms 25count
+        writeRegs(data14, 2);
+
+        uint8_t data2[2] = {0x2D, 0x0C};//activate freefall and motion and puls interrupt
+        writeRegs(data2, 2);
+        uint8_t data1[2] = {0x2E, 0x08};//activate interrupt for freefall and motion INT2 and for pulse INT1
+        writeRegs(data1, 2);
+        uint8_t data122[2] = {0x2A, 0x09};//activate flag OEA =1
+        writeRegs(data122, 2);
+        
+    }
+    else if(_mode==true&&mode==false){
+        mode=true;
+        uint8_t data[2] = {0x2A, 0x08};
+        writeRegs(data, 2);
+        uint8_t data3[2] = {0x21, 0x15};//activate flag single tap and ELE
+        writeRegs(data3, 2);
+        uint8_t data6[2] = {0x23, 0x19};//Set X Threshold to 1.575g
+        writeRegs(data6, 2);
+        uint8_t data7[2] = {0x24, 0x19};//Set X Threshold to 1.575g
+        writeRegs(data7, 2);
+        uint8_t data8[2] = {0x25, 0x2A};//Set X Threshold to 1.575g
+        writeRegs(data8, 2);
+        uint8_t data9[2] = {0x26, 0x50};//Set X Threshold to 1.575g
+        writeRegs(data9, 2);
+        uint8_t data10[2] = {0x27, 0xF0};//Set X Threshold to 1.575g
+        writeRegs(data10, 2);
+
+        uint8_t data12[2] = {0x15, 0xB8};//activate flag OEA =1
+        writeRegs(data12, 2);
+        uint8_t data13[2] = {0x17, 0x03};// 3g/0.063g = 48
+        writeRegs(data13, 2);
+        uint8_t data14[2] = {0x18, 0x06};// 400 ms/10 ms 25count
+        writeRegs(data14, 2);
+
+        uint8_t data2[2] = {0x2D, 0x0C};//activate freefall and motion and puls interrupt
+        writeRegs(data2, 2);
+        uint8_t data1[2] = {0x2E, 0x08};//activate interrupt for freefall and motion INT2 and for pulse INT1
+        writeRegs(data1, 2);
+        uint8_t data122[2] = {0x2A, 0x09};//activate flag OEA =1
+        writeRegs(data122, 2);
+    }
     
-    uint8_t data1[2] = {0x2A, 0x08};//standby
-    writeRegs(data1, 2);
-    uint8_t data3[2] = {0x15, 0xD8};//activate flag OEA =1
-    writeRegs(data3, 2);
-    uint8_t data4[2] = {0x17, 0x30};// 3g/0.063g = 48
-    writeRegs(data4, 2);
-    uint8_t data[2] = {0x18, 0x19};// 400 ms/10 ms 25count
-    writeRegs(data, 2);
-    uint8_t data11[2]={0x2A,9};
-    writeRegs(data11, 2);
 }

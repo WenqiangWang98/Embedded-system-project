@@ -38,18 +38,23 @@ InterruptIn button(USER_BUTTON);
 InterruptIn INT1(PA_11);
 InterruptIn INT2(PA_12);
 // general
+InterruptIn reset(MCU_nS);
+
+bool stopFlag=false;
+Thread thread;
 
 int mode = 0;
 int ledColor = 0;
 bool pressed = false;
-bool hasMotion=false;
-bool hasMFreefall=false;
+bool hasFreefall=false;
 int index = 0;
 DigitalOut led1(LED1);
 DigitalOut led2(LED2);
 DigitalOut led3(LED3);
 
 unsigned int tap_times=0;
+unsigned int mot_times=0;
+
 // parameter aux to calculate
 
 
@@ -423,38 +428,51 @@ void resetValues(){
 
 
 void testMode(){
-    
+    accelerometer.changeMode(false);
     pc.printf("TEST MODE\n");
-    if(hasMotion)pc.printf("Has motion\n");
     led1=1;
     index = 0 ; //reset index normal mode
     printAllMeasuredTestMode();
-    pc.printf("Tap times: %d  \n\n\n",tap_times);
+    pc.printf("Tap times: %d  \n",tap_times);
+    pc.printf("Motion times: %d  \n\n\n",mot_times);
     led.writeAndChangeColor(ledColor);// change led color using the dominant colour detected by the sensor
-    ThisThread::sleep_for(cadencetest); // every 2 seconds
+    if(!stopFlag)ThisThread::sleep_for(cadencetest); // every 2 seconds
 
 
 }
 
 void normalMode(){
-  
+    accelerometer.changeMode(false);
     if(index == size){ // 1 hours / 30 seconds = 120 index
         printAllCalculated();
         resetValues();
-        ThisThread::sleep_for(2000);
+        if(!stopFlag)ThisThread::sleep_for(2000);
         
     }
     pc.printf("NORMAL MODE\n");
     printAllMeasuredNormalMode();
-    pc.printf("Tap times: %d \n\n\n",tap_times);
+    pc.printf("Tap times: %d  \n",tap_times);
+    pc.printf("Motion times: %d  \n\n\n",mot_times);
     led.writeAndChangeColor(ledColor);// change led color using the dominant colour detected by the sensor
     led2=1;
-    ThisThread::sleep_for(cadencenormal); // every 30 seconds
+    if(!stopFlag)ThisThread::sleep_for(cadencenormal); // every 30 seconds
 }
 
 void advancedMode(){
-
+    accelerometer.changeMode(true);
     pc.printf("ADVANCED MODE\n");
+    if(index == size){ // 1 hours / 30 seconds = 120 index
+        printAllCalculated();
+        resetValues();
+        if(!stopFlag)ThisThread::sleep_for(2000);
+        
+    }
+    printAllMeasuredNormalMode();
+    pc.printf("Tap times: %d  \n",tap_times);
+    pc.printf("Motion times: %d  \n\n\n",mot_times);
+    led.writeAndChangeColor(ledColor);// change led color using the dominant colour detected by the sensor
+    led2=1;
+    if(!stopFlag)ThisThread::sleep_for(cadencenormal); // every 30 seconds
     led3= 1;
     index = 0 ; //reset index normal mode
 
@@ -467,13 +485,57 @@ void button_pressed(void){
 }
 
 void rise_INT1(){
-    if(mode<2)hasMotion=true;
+    //if(mode<2)tap_times++;
+    if(mode<2)stopFlag=true;
 }
 
 void rise_INT2(){
-    if(mode<2)tap_times++;
+     if(mode==2)stopFlag=true;
+     else mot_times++;
 }
+void loop_thread(){
+    while(true){
+        if(stopFlag){
 
+        }
+        if(reset){
+            
+        }
+        while (!stopFlag) {
+        
+            if(pressed){
+                pressed= false;
+                mode++;
+                if(mode > 2){
+                    mode = 0;
+                }
+            }
+            led1 = 0;
+            led2 = 0;
+            led3 = 0;
+            
+            switch (mode) {
+                case 0:
+                    testMode();
+                    
+                
+                    break;
+                case 1:
+
+                    normalMode();
+            
+                    break;
+                case 2:
+                    advancedMode();
+                
+
+                    break;
+            }
+        }
+
+    }
+    
+}
 
 int main() {
  
@@ -495,47 +557,47 @@ int main() {
     testMode();
     led.writeAndChangeColor(7); // no color
     led1= 1; //led 1 open
-    ThisThread::sleep_for(1000);
+    //ThisThread::sleep_for(1000);
     button.mode(PullDown);
     button.fall(button_pressed);
 
 
-
-
-    while (1) {
+    thread.start(callback(loop_thread));
+    pc.printf("end");
+    // while (!ThisThread::flags_wait_any(STOP_FLAG)) {
         
-        if(pressed){
-            pressed= false;
-            mode++;
-            if(mode > 2){
-                mode = 0;
-            }
-        }
-        led1 = 0;
-        led2 = 0;
-        led3 = 0;
+    //     if(pressed){
+    //         pressed= false;
+    //         mode++;
+    //         if(mode > 2){
+    //             mode = 0;
+    //         }
+    //     }
+    //     led1 = 0;
+    //     led2 = 0;
+    //     led3 = 0;
         
-        switch (mode) {
-            case 0:
-                testMode();
+    //     switch (mode) {
+    //         case 0:
+    //             testMode();
                 
                
-                break;
-            case 1:
+    //             break;
+    //         case 1:
 
-                normalMode();
+    //             normalMode();
            
-                break;
-            case 2:
-                advancedMode();
+    //             break;
+    //         case 2:
+    //             advancedMode();
                
 
-                break;
-        }
+    //             break;
+    //     }
    
 
         //  ThisThread::sleep_for(1000); //  1 seconds
       
-    }
+    //}
     
 }
