@@ -22,7 +22,7 @@ MMA8451Q::MMA8451Q(I2C* _i2c ): i2c(_i2c) {
     // writeRegs(data, 2);
     
     
-    // uint8_t data3[2] = {0x21, 0x15};//activate flag single tap and ELE
+    // uint8_t data3[2] = {0x21, 0x78};//activate flag single tap and ELE
     // writeRegs(data3, 2);
     
     // uint8_t data6[2] = {0x23, 0x19};//Set X Threshold to 1.575g
@@ -40,9 +40,9 @@ MMA8451Q::MMA8451Q(I2C* _i2c ): i2c(_i2c) {
 
     // uint8_t data12[2] = {0x15, 0xD8};//activate flag OEA =1
     // writeRegs(data12, 2);
-    // uint8_t data13[2] = {0x17, 0x20};// 3g/0.063g = 48
+    // uint8_t data13[2] = {0x17, 0x15};// 3g/0.063g = 48
     // writeRegs(data13, 2);
-    // uint8_t data14[2] = {0x18, 0x0A};// 400 ms/10 ms 25count
+    // uint8_t data14[2] = {0x18, 0x05};// 400 ms/10 ms 25count
     // writeRegs(data14, 2);
 
     // uint8_t data2[2] = {0x2D, 0x04};//activate freefall and motion and puls interrupt
@@ -57,13 +57,13 @@ MMA8451Q::MMA8451Q(I2C* _i2c ): i2c(_i2c) {
     // writeRegs(data11, 2);
 
 
-    // uint8_t data12[2] = {0x2A, 0x20};//activate flag OEA =1
+    // uint8_t data12[2] = {0x2A, 0x38};//activate flag OEA =1
     // writeRegs(data12, 2);
-    // uint8_t data13[2] = {0x15, 0xB8};// 3g/0.063g = 48
+    // uint8_t data13[2] = {0x15, 0x55};// 3g/0.063g = 48
     // writeRegs(data13, 2);
-    // uint8_t data14[2] = {0x17, 0x03};// 400 ms/10 ms 25count
+    // uint8_t data14[2] = {0x17, 0x05};// 400 ms/10 ms 25count
     // writeRegs(data14, 2);
-    // uint8_t data22[2] = {0x18, 0x06};//activate freefall and motion and puls interrupt
+    // uint8_t data22[2] = {0x18, 0x05};//activate freefall and motion and puls interrupt
     // writeRegs(data22, 2);
     // uint8_t data2[2] = {0x2D, 0x04};//activate freefall and motion and puls interrupt
     // writeRegs(data2, 2);
@@ -158,11 +158,11 @@ void MMA8451Q::changeMode(bool _mode){
         uint8_t data10[2] = {0x27, 0xF0};//Set X Threshold to 1.575g
         writeRegs(data10, 2);
 
-        uint8_t data12[2] = {0x15, 0xD8};//activate flag OEA =1
+        uint8_t data12[2] = {0x15, 0x78};//activate flag OEA =1
         writeRegs(data12, 2);
-        uint8_t data13[2] = {0x17, 0x20};// 3g/0.063g = 48
+        uint8_t data13[2] = {0x17, 0x15};// 3g/0.063g = 48
         writeRegs(data13, 2);
-        uint8_t data14[2] = {0x18, 0x19};// 400 ms/10 ms 25count
+        uint8_t data14[2] = {0x18, 0x05};// 400 ms/10 ms 25count
         writeRegs(data14, 2);
 
         uint8_t data2[2] = {0x2D, 0x0C};//activate freefall and motion and puls interrupt
@@ -192,9 +192,9 @@ void MMA8451Q::changeMode(bool _mode){
 
         uint8_t data12[2] = {0x15, 0xB8};//activate flag OEA =1
         writeRegs(data12, 2);
-        uint8_t data13[2] = {0x17, 0x03};// 3g/0.063g = 48
+        uint8_t data13[2] = {0x17, 0x05};// 3g/0.063g = 48
         writeRegs(data13, 2);
-        uint8_t data14[2] = {0x18, 0x06};// 400 ms/10 ms 25count
+        uint8_t data14[2] = {0x18, 0x05};// 400 ms/10 ms 25count
         writeRegs(data14, 2);
 
         uint8_t data2[2] = {0x2D, 0x0C};//activate freefall and motion and puls interrupt
