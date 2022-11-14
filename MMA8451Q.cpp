@@ -16,12 +16,12 @@
  
 MMA8451Q::MMA8451Q(I2C* _i2c ): i2c(_i2c) {
     // activate the peripheral
-    uint8_t data[2] = {0x2A, 0x08};
-    writeRegs(data, 2);
+    // uint8_t data[2] = {0x2A, 0x18};
+    // writeRegs(data, 2);
     
     
-    uint8_t data3[2] = {0x21, 0x15};//activate flag single tap and ELE
-    writeRegs(data3, 2);
+    // // uint8_t data3[2] = {0x21, 0x15};//activate flag single tap and ELE
+    // // writeRegs(data3, 2);
     
     uint8_t data6[2] = {0x23, 0x19};//Set X Threshold to 1.575g
     writeRegs(data6, 2);
@@ -30,20 +30,50 @@ MMA8451Q::MMA8451Q(I2C* _i2c ): i2c(_i2c) {
     uint8_t data8[2] = {0x25, 0x2A};//Set X Threshold to 1.575g
     writeRegs(data8, 2);
 
-    uint8_t data9[2] = {0x26, 0x50};//Set X Threshold to 1.575g
-    writeRegs(data9, 2);
+    // // uint8_t data9[2] = {0x26, 0x50};//Set X Threshold to 1.575g
+    // // writeRegs(data9, 2);
 
-    uint8_t data10[2] = {0x27, 0xF0};//Set X Threshold to 1.575g
-    writeRegs(data10, 2);
+    // // uint8_t data10[2] = {0x27, 0xF0};//Set X Threshold to 1.575g
+    // // writeRegs(data10, 2);
 
-    uint8_t data2[2] = {0x2D, 0x08};//activate freefall and motion and puls interrupt
+    // uint8_t data12[2] = {0x15, 0xD8};//activate flag OEA =1
+    // writeRegs(data12, 2);
+    // uint8_t data13[2] = {0x17, 0x20};// 3g/0.063g = 48
+    // writeRegs(data13, 2);
+    // uint8_t data14[2] = {0x18, 0x0A};// 400 ms/10 ms 25count
+    // writeRegs(data14, 2);
+
+    // uint8_t data2[2] = {0x2D, 0x04};//activate freefall and motion and puls interrupt
+    // writeRegs(data2, 2);
+
+    // uint8_t data1[2] = {0x2E, 0x04};//activate interrupt for freefall and motion INT2 and for pulse INT1
+    // writeRegs(data1, 2);
+
+    
+
+    // uint8_t data11[2]={0x2A,19};
+    // writeRegs(data11, 2);
+
+
+    uint8_t data12[2] = {0x2A, 0x20};//activate flag OEA =1
+    writeRegs(data12, 2);
+    uint8_t data13[2] = {0x15, 0xB8};// 3g/0.063g = 48
+    writeRegs(data13, 2);
+    uint8_t data14[2] = {0x17, 0x03};// 400 ms/10 ms 25count
+    writeRegs(data14, 2);
+    uint8_t data22[2] = {0x18, 0x06};//activate freefall and motion and puls interrupt
+    writeRegs(data22, 2);
+    uint8_t data2[2] = {0x2D, 0x04};//activate freefall and motion and puls interrupt
     writeRegs(data2, 2);
 
-    uint8_t data1[2] = {0x2E, 0x08};//activate interrupt for freefall and motion INT2 and for pulse INT1
+    uint8_t data1[2] = {0x2E, 0x04};//activate interrupt for freefall and motion INT2 and for pulse INT1
     writeRegs(data1, 2);
 
-    uint8_t data11[2]={0x2A,9};
-    writeRegs(data11, 2);
+    uint8_t data122[2] = {0x2A, 0x21};//activate flag OEA =1
+    writeRegs(data122, 2);
+
+
+
     // char t[1] = {0X2A};
     // i2c->write(m_addr, t, 1, true);
     // i2c->read(m_addr, (char *)data11, 1);
@@ -106,3 +136,17 @@ void MMA8451Q::writeRegs(uint8_t * data, int len) {
     i2c->write(m_addr, (char *)data, len);
 }
  
+void MMA8451Q::changeMode(bool mode){
+
+    
+    uint8_t data1[2] = {0x2A, 0x08};//standby
+    writeRegs(data1, 2);
+    uint8_t data3[2] = {0x15, 0xD8};//activate flag OEA =1
+    writeRegs(data3, 2);
+    uint8_t data4[2] = {0x17, 0x30};// 3g/0.063g = 48
+    writeRegs(data4, 2);
+    uint8_t data[2] = {0x18, 0x19};// 400 ms/10 ms 25count
+    writeRegs(data, 2);
+    uint8_t data11[2]={0x2A,9};
+    writeRegs(data11, 2);
+}

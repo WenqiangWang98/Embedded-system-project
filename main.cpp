@@ -42,12 +42,14 @@ InterruptIn INT2(PA_12);
 int mode = 0;
 int ledColor = 0;
 bool pressed = false;
+bool hasMotion=false;
+bool hasMFreefall=false;
 int index = 0;
 DigitalOut led1(LED1);
 DigitalOut led2(LED2);
 DigitalOut led3(LED3);
 
-int tap_times=0;
+unsigned int tap_times=0;
 // parameter aux to calculate
 
 
@@ -423,9 +425,11 @@ void resetValues(){
 void testMode(){
     
     pc.printf("TEST MODE\n");
+    if(hasMotion)pc.printf("Has motion\n");
     led1=1;
     index = 0 ; //reset index normal mode
     printAllMeasuredTestMode();
+    pc.printf("Tap times: %d  \n\n\n",tap_times);
     led.writeAndChangeColor(ledColor);// change led color using the dominant colour detected by the sensor
     ThisThread::sleep_for(cadencetest); // every 2 seconds
 
@@ -442,7 +446,7 @@ void normalMode(){
     }
     pc.printf("NORMAL MODE\n");
     printAllMeasuredNormalMode();
-    
+    pc.printf("Tap times: %d \n\n\n",tap_times);
     led.writeAndChangeColor(ledColor);// change led color using the dominant colour detected by the sensor
     led2=1;
     ThisThread::sleep_for(cadencenormal); // every 30 seconds
@@ -454,7 +458,7 @@ void advancedMode(){
     led3= 1;
     index = 0 ; //reset index normal mode
 
-    pc.printf("Tap times: %d \n",tap_times);
+    
 
 }
 
@@ -463,7 +467,11 @@ void button_pressed(void){
 }
 
 void rise_INT1(){
-    tap_times++;
+    if(mode<2)hasMotion=true;
+}
+
+void rise_INT2(){
+    if(mode<2)tap_times++;
 }
 
 
@@ -472,6 +480,9 @@ int main() {
     //initialize
     INT1.mode(PullDown);
     INT1.rise(rise_INT1);
+
+    INT2.mode(PullDown);
+    INT2.rise(rise_INT2);
     
     mode =0;
     resetValues();
